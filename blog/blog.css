@@ -1,0 +1,103 @@
+body {
+    font: 112.5%/1.5 lato, sans-serif;
+    color: #777779;
+  }
+  
+  .note {
+    padding: .5em;
+    font-size: .75em;
+    text-align: center;
+  }
+  
+  .submitted {
+    font-style: italic;
+    font-size: .875em;
+    text-align: center;
+    margin-top: 3em;
+  }
+  
+  p {
+    margin: 0 0 1em;
+  }
+  
+  p:first-of-type {
+    font-size: 1.25em;
+    font-weight: 300;
+    margin-top: 2em;
+  }
+  
+  h1,h2,h3,h4,h5 {
+    font-family: 'roboto slab', serif;
+    color: #425363;
+    font-weight: 300;
+  }
+  
+  h1 {
+    text-align: center;
+    font-size: 4em;
+    font-weight: 100;
+    background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,.7)),url(https://tenable.com/sites/drupal.dmz.tenablesecurity.com/files/images/articles/bashing-big-data.png);
+    background-size: cover;
+    color: #fff;
+    margin: 0;
+    padding: 4em 0 .25em;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.75);
+  }
+  
+  h3 {
+    font-size: 2em;
+    margin: 1em 0 0;
+  }
+  
+  .container {
+    margin: 2em auto;
+    width: 98%;
+    max-width: 34em;
+  }
+  
+  q {
+    color: #00a5b5;
+    font-family: 'roboto slab';
+    font-size: 1.5em;
+    font-weight: 300;
+    line-height: 1.1;
+  }
+  
+  q.align-right {
+    float: right;
+    width: 50%;
+    margin: 1em -25% 1em 1.5em;
+  }
+  
+  q.align-left {
+    float: left;
+    width: 50%;
+    margin: 1em 1.5em 1em -25%;
+  }
+  
+  .dropcap {
+    background: #00a5b5;
+    color :#fff;
+    font-size: 3em;
+    float: left;
+    display: block;
+    padding: .25em;
+    margin: 0 .125em 0 0;
+    line-height: 1;
+    width: 1em;
+    text-align: center;
+    font-family: 'roboto slab';
+    font-weight: 300;
+  }
+  
+  a {
+    color: #00a5b5;
+  }
+  
+  pre {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 1em;
+    border-radius: 3px;
+    font-size: .875em;
+  }
