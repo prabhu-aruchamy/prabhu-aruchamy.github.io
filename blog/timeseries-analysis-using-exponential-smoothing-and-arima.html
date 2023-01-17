@@ -1,0 +1,198 @@
+<link href='https://fonts.googleapis.com/css?family=Lato:100,300,400,700|Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+<link href='blog.css' rel='stylesheet' type='text/css'>
+<!-- <div class="note">Originally published for <a href="https://www.tenable.com/blog/bashing-big-data">Tenable Network Security</a></div> -->
+<h1>Time series Forecasting using Exponential Smoothing and ARIMA methods</h1>
+
+<div class="container">
+  <div class="submitted">By <b>Prabhu Aruchamy</b> on January 15, 2023</div>
+  <p><span class="dropcap">R</span>is used everywhere espically in Data Science. As Part of our Time Series Analysis and Forecasting Course, our mentor Dr.Prashobhan Palakkeel has given an assignment to do an Exponential Smoothing and ARIMA to analysis a TimeSeries data. I will be explaining the results that I have got.</p>
+<h3>About the Dataset</h3>
+<p>I have used the Dataset “HBS Table No.163 Components of Money Stock”. The Series that I have used from the dataset is, “Currency in Circulation”. I have used Exponential smoothing technique and ARIMA methods for modelling and forecasting. I have included the R code that I have used for forecasting and the outputs of each model and comparison between both models.</p>
+<h3>Analysis of Dataset</h3>
+<p>The First process after downloading the data set is to read the dataset in R. The Series “Currency in Circulation” has been copied to clipboard. The below R code reads the data from the clipboard and stores it in the variable currency_in_circulation_data.</p>
+<pre><code>currency_in_circulation_data <- read.delim('clipboard', header = FALSE)
+currency_in_circulation_data  
+</code></pre>
+
+<p>After Reading, I have converted the data to vector.</p>
+<pre><code>vec <- as.vector(t(currency_in_circulation_data))
+vec</code></pre>
+
+<p>The Vector data has been reversed because, the data in the dataset starts from 2022-23 and ends in 1991-92. The Data should start from 1991-92 and end in 2022-23. To achieve this, the data is been reversed using the rev() function in R.</p>
+<pre><code>rev_currency_in_circulation_data <- rev(vec)
+rev_currency_in_circulation_data</code></pre>
+
+<p>We are converting the reversed vector data which is stored in the variable rev_currency_in_circulation_data into a timeseries data. The Start year will be 1992 - April Month and ends in 2023 - August Month. The Frequency is 12 because, number of months is 12.</p>
+<pre><code>data_ts <- ts(rev_currency_in_circulation_data, start = c(1992,4), end= c(2023,8) ,frequency = 12)
+data_ts</code></pre>
+
+<p>Removing NA values and plotting the TimeSeries data</p>
+<pre><code>#Removing NA Values in TimeSeries Data
+data_ts< na.omit(data_ts)
+data_ts
+    
+plot(data_ts)
+boxplot(data_ts)
+boxplot.stats(data_ts)</code></pre>
+
+<h2>Output Screenshots</h2>
+<p>Reversed Vector</p>
+<img src="output/ts/rev.PNG">
+<p>Time Series Data</p>
+<img src="output/ts/ts.PNG">
+<p>TimeSeries plot</p>
+<img src="output/ts/ts_plot.PNG">
+<p>TimeSeries boxplot</p>
+<img src="output/ts/ts_box.PNG">
+
+
+<h2>Modelling and forecasting the given time series using the Exponential Smoothing Method</h2>
+<p>Simple Exponential Smoothing</p>
+<pre><code>ot_ses <-ses(data_ts, h=100)
+ot_ses #Printing the forecast
+summary(ot_ses[["model"]])
+autoplot(ot_ses)</code></pre>
+
+<p>Holt's Method</p>
+<pre><code>
+ot_holt <- holt(data_ts, h=100, PI=FALSE)
+ot_holt #Printing the forecast
+summary(ot_holt[["model"]]) #Summary of Holt's Method
+autoplot(ot_holt) #Plotting the Forecast from Holt's Exponential Smoothing.</code></pre>
+
+<p>Holt's Winter Seasonal Method</p>
+<pre><code>
+fit1 <- hw(data_ts, seasonal = "additive")
+fit2 <- hw(data_ts, seasonal = "multiplicative")
+autoplot(fit1)
+autoplot(fit2)
+    
+# Decomposition of time series data
+ot_holtsWinter <- decompose(data_ts, "multiplicative")
+autoplot(ot_holtsWinter)
+    
+#Forecasting for next 100 months using Holt's Winter Method
+ot_forecast_holtWinter <- forecast(ets(data_ts, model="AAA"), h=100)
+ot_forecast_holtWinter #Printing the forecast
+summary(ot_forecast_holtWinter[["model"]]) #Summary of Holt's Winter Method
+autoplot(ot_forecast_holtWinter) #Plotting the Forecast</code></pre>
+
+<h2>Output Screenshots of Exponential Smoothing Method</h2>
+<p>Summary of Simple Exponential Smoothing</p>
+<img src="output/ts/summary_ses.PNG">
+<p>Plot of Forecasts from Simple Exponential Smoothing</p>
+<img src="output/ts/forecast_ses.png">
+<p>Summary of Holt's Method</p>
+<img src="output/ts/summaey_holts.PNG">
+<p>Plot of Forecasts from Holt's Method</p>
+<img src="output/ts/forecast_holts.png">
+<p>Decomposition of time series data</p>
+<img src="output/ts/decom.png">
+<p>Summary of Holt's Winter Method</p>
+<img src="output/ts/summary_hwm.PNG">
+<p>Plot of Forecasts from Holt's Winter Method</p>
+<img src="output/ts/forecast_ets.png">
+
+<h2>Modelling and forecasting the given time series using the ARIMA method</h2>
+<p>ARIMA model for exponential series</p>
+
+<pre><code>ot_arima <- auto.arima(data_ts, trace = TRUE)
+ot_arima
+
+#Forecasting using arima - Next 100 Values
+ot_forecast_arima <- forecast(ot_arima, 100)
+ot_forecast_arima  #Printing the Forecast
+autoplot(ot_forecast_arima) #Plotting the Forecast
+</code></pre>
+
+<p>Augmented Dickey-Fuller Test</p>
+
+<pre><code>data_ts %>% autoplot()
+data_ts %>% log() %>% autoplot()
+data_ts %>% log() %>% diff %>% autoplot()
+data_ts %>% log() %>% diff(lag=12) %>% autoplot()
+data_ts %>% log() %>% diff -> prabhu_dif
+    
+#Augmented Dickey-Fuller Test
+adfTest(prabhu_dif)
+    
+plot(stl(data_ts, s.window = 13))
+    
+#check if data is stationary. Stationary if the value is test static value is < critical value
+#KPSS TEST
+library(urca) # Assumption that, H0 is <- Data is stationary.
+summary(ur.kpss(data_ts))
+    
+ndiffs(data_ts) #Number of time we have to diff to make the data stationary.
+data_diff <- diff(data_ts, 2) #making the data stationary.
+#testing if it become stationary
+summary(ur.kpss(data_diff))</code></pre>
+
+<p>AUTO-ARIMA model</p>
+<pre><code>fit <- auto.arima(data_diff)
+fit
+    
+acf(data_diff, lag.max = 100)
+pacf(data_diff, lag.max=20)
+ts.plot(data_diff)
+
+#Plotting the forecasts from arima
+ot_arima_forecast <- forecast(fit, h=100)
+ot_arima_forecast
+autoplot(ot_arima_forecast)</code></pre>
+
+<p>Root Mean Square Error</p>
+
+<pre><code>getrmse <- function(x,h,...)
+{
+    train.end <- time(x)[length(x)-h]
+    test.start <- time(x)[length(x)-h+1]
+    train <- window(x,end=train.end)
+    test <- window(x,start=test.start)
+    fit <- Arima(train,...)
+    fc <- forecast(fit,h=h)
+    return(accuracy(fc,test)[2,"RMSE"])
+}
+    
+getrmse(data_ts,h=24,order=c(3,0,0),seasonal=c(2,1,0),lambda=0)
+getrmse(data_ts,h=24,order=c(3,0,1),seasonal=c(2,1,0),lambda=0)
+getrmse(data_ts,h=24,order=c(3,0,2),seasonal=c(2,1,0),lambda=0)
+getrmse(data_ts,h=24,order=c(3,0,1),seasonal=c(1,1,0),lambda=0)
+</code></pre>
+
+<h2>Output Screenshots of ARIMA Model</h2>
+<p>ARIMA model for exponential series</p>
+<p>Plots of Forecasts from ARIMA</p>
+<img src="output/ts/forecasts_arima_e.png">
+<p>Augmented Dickey-Fuller Test</p>
+<img src="output/ts/adf_test.PNG">
+<p>Augmented Dickey-Fuller Test</p>
+<img src="output/ts/adf_test.PNG">
+<img src="output/ts/Rplot.png">
+<p>KPSS Unit Test</p>
+<img src="output/ts/kpss.PNG">
+<p>Forecast ARIMA(2,1,0)</p>
+<img src="output/ts/forecast_arima.png">
+<p>RMSE</p>
+<img src="output/ts/rmse.png">
+
+
+<h2>Comparision of Accuracy of All Models</h2>
+<p>Accuracy of Simple Exponential Smoothing</p>
+<img src="output/ts/accuracy_ses.PNG">
+
+<p>Accuracy of Holt’s Method</p>
+<img src="output/ts/accuracy_holts.PNG">
+
+<p>Accuracy of Holt’s Winter Method</p>
+<img src="output/ts/accuracy_holts_winter.PNG">
+
+<p>Accuracy of ARIMA for Exponential Series</p>
+<img src="output/ts/accuracy_arima_e.PNG">
+
+<p>Accuracy of AUTO-ARIMA Model</p>
+<img src="output/ts/accuracy_arima.PNG">
+
+
+
+
