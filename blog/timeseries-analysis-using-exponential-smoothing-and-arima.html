@@ -26,14 +26,27 @@ rev_currency_in_circulation_data</code></pre>
 <pre><code>data_ts <- ts(rev_currency_in_circulation_data, start = c(1992,4), end= c(2023,8) ,frequency = 12)
 data_ts</code></pre>
 
-<p>Removing NA values and plotting the TimeSeries data</p>
-<pre><code>#Removing NA Values in TimeSeries Data
-data_ts< na.omit(data_ts)
-data_ts
-    
-plot(data_ts)
+<p>Plotting the TimeSeries data</p>
+<pre><code>plot(data_ts)
 boxplot(data_ts)
 boxplot.stats(data_ts)</code></pre>
+
+<p>Decomposition of time series data</p>
+<pre><code>decom <- decompose(data_ts, "multiplicative")
+  autoplot(decom)
+</code></pre>
+
+<p>Check if the Data is Stationary using KPSS Test. Stationary if the value is test static value is < critical value</p>
+<pre><code>#KPSS TEST
+  library(urca) #Assumption that, H0 is <- Data is stationary.
+  summary(ur.kpss(data_ts))
+      
+  ndiffs(data_ts) #Number of time we have to diff to make the data stationary.
+  data_diff <- diff(data_ts, 2) #making the data stationary.
+  #testing if it become stationary
+  summary(ur.kpss(data_diff))</code></pre>
+
+</code></pre>
 
 <h2>Output Screenshots</h2>
 <p>Reversed Vector</p>
@@ -41,21 +54,25 @@ boxplot.stats(data_ts)</code></pre>
 <p>Time Series Data</p>
 <img src="output/ts/ts.PNG">
 <p>TimeSeries plot</p>
-<img src="output/ts/ts_plot.png">
+<img src="output/ts/ts_plot.PNG">
+<p>Decomposition of time series data</p>
+<img src="output/ts/decom.png">
+<p>KPSS Unit Test</p>
+<img src="output/ts/kpss.PNG">
 <p>TimeSeries boxplot</p>
-<img src="output/ts/ts_box.png">
+<img src="output/ts/ts_box.PNG">
 
 
 <h2>Modelling and forecasting the given time series using the Exponential Smoothing Method</h2>
 <p>Simple Exponential Smoothing</p>
-<pre><code>ot_ses <-ses(data_ts, h=100)
+<pre><code>ot_ses <-ses(data_ts, h=6)
 ot_ses #Printing the forecast
 summary(ot_ses[["model"]])
 autoplot(ot_ses)</code></pre>
 
 <p>Holt's Method</p>
 <pre><code>
-ot_holt <- holt(data_ts, h=100, PI=FALSE)
+ot_holt <- holt(data_ts, h=6, PI=FALSE)
 ot_holt #Printing the forecast
 summary(ot_holt[["model"]]) #Summary of Holt's Method
 autoplot(ot_holt) #Plotting the Forecast from Holt's Exponential Smoothing.</code></pre>
@@ -67,12 +84,8 @@ fit2 <- hw(data_ts, seasonal = "multiplicative")
 autoplot(fit1)
 autoplot(fit2)
     
-# Decomposition of time series data
-ot_holtsWinter <- decompose(data_ts, "multiplicative")
-autoplot(ot_holtsWinter)
-    
 #Forecasting for next 100 months using Holt's Winter Method
-ot_forecast_holtWinter <- forecast(ets(data_ts, model="AAA"), h=100)
+ot_forecast_holtWinter <- forecast(ets(data_ts, model="AAA"), h=6)
 ot_forecast_holtWinter #Printing the forecast
 summary(ot_forecast_holtWinter[["model"]]) #Summary of Holt's Winter Method
 autoplot(ot_forecast_holtWinter) #Plotting the Forecast</code></pre>
@@ -86,8 +99,6 @@ autoplot(ot_forecast_holtWinter) #Plotting the Forecast</code></pre>
 <img src="output/ts/summaey_holts.PNG">
 <p>Plot of Forecasts from Holt's Method</p>
 <img src="output/ts/forecast_holts.png">
-<p>Decomposition of time series data</p>
-<img src="output/ts/decom.png">
 <p>Summary of Holt's Winter Method</p>
 <img src="output/ts/summary_hwm.PNG">
 <p>Plot of Forecasts from Holt's Winter Method</p>
@@ -117,16 +128,7 @@ data_ts %>% log() %>% diff -> prabhu_dif
 adfTest(prabhu_dif)
     
 plot(stl(data_ts, s.window = 13))
-    
-#check if data is stationary. Stationary if the value is test static value is < critical value
-#KPSS TEST
-library(urca) # Assumption that, H0 is <- Data is stationary.
-summary(ur.kpss(data_ts))
-    
-ndiffs(data_ts) #Number of time we have to diff to make the data stationary.
-data_diff <- diff(data_ts, 2) #making the data stationary.
-#testing if it become stationary
-summary(ur.kpss(data_diff))</code></pre>
+</code></pre>
 
 <p>AUTO-ARIMA model</p>
 <pre><code>fit <- auto.arima(data_diff)
@@ -137,7 +139,7 @@ pacf(data_diff, lag.max=20)
 ts.plot(data_diff)
 
 #Plotting the forecasts from arima
-ot_arima_forecast <- forecast(fit, h=100)
+ot_arima_forecast <- forecast(fit, h=6)
 ot_arima_forecast
 autoplot(ot_arima_forecast)</code></pre>
 
@@ -169,12 +171,10 @@ getrmse(data_ts,h=24,order=c(3,0,1),seasonal=c(1,1,0),lambda=0)
 <p>Augmented Dickey-Fuller Test</p>
 <img src="output/ts/adf_test.PNG">
 <img src="output/ts/Rplot.png">
-<p>KPSS Unit Test</p>
-<img src="output/ts/kpss.PNG">
 <p>Forecast ARIMA(2,1,0)</p>
 <img src="output/ts/forecast_arima.png">
 <p>RMSE</p>
-<img src="output/ts/rmse.PNG">
+<img src="output/ts/rmse.png">
 
 
 <h2>Comparision of Accuracy of All Models</h2>
@@ -192,23 +192,3 @@ getrmse(data_ts,h=24,order=c(3,0,1),seasonal=c(1,1,0),lambda=0)
 
 <p>Accuracy of AUTO-ARIMA Model</p>
 <img src="output/ts/accuracy_arima.PNG">
-<br>
-<p>
-<br><br>Blog by,<br>
-Prabhu Aruchamy,<br>
-CB.BU.P2MBA21002.<br>
-5th trimester, MBA<br>
-Amrita School of Business, <br>
-Amrita Vishwa Vidyapeetham, Coimbatore.
-</p>
-<br>
-<p>
-“This blog is part of the assignments submitted for the course, Time series Analysis and Forecasting/one of the Business Analytics Electives Courses at Amrita School of Business, Coimbatore.”
-</p>
-
-<br>
-
-
-
-
-
