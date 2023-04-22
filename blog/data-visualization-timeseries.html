@@ -1,0 +1,83 @@
+<link href='https://fonts.googleapis.com/css?family=Lato:100,300,400,700|Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+<link href='blog.css' rel='stylesheet' type='text/css'>
+<!-- <div class="note">Originally published for <a href="https://www.tenable.com/blog/bashing-big-data">Tenable Network Security</a></div> -->
+<h1>Data Visualization and Communication</h1>
+
+<div class="container">
+  <div class="submitted">By <b>Prabhu Aruchamy</b> on January 15, 2023</div>
+  <p><span class="dropcap">R</span>is used everywhere espically in Data Science. As Part of our Data Visualization and Communication Course, our mentor Dr.Prashobhan Palakkeel has given an assignment to do data Visualization of timeseries data. I have used most popular data Visualization plots. I have included the R code that I have used for Visualization and the outputs.</p>
+<h3>Visualization of Dataset</h3>
+<p>I have tried to visualize the AirPassengers dataset from R using different plots.</p>
+<pre><code>data(AirPassengers)
+passengers <- ts(AirPassengers, start = c(1949, 1), end = c(1960, 12), frequency = 12) 
+</code></pre>
+
+<p>Let's create some visualizations of this time series using different popular graphs and plots. We'll use the ggplot2 package for creating the visualizations.</p>
+<pre><code>library(ggplot2)
+
+# Line chart
+ggplot(data = data.frame(time = time(passengers), passengers = passengers), aes(x = time, y = passengers)) + 
+geom_line() +
+labs(title = "Airline Passengers (1949-1960)", x = "Year", y = "Passengers")</code></pre>
+
+<p>Line Graph</p>
+<img src="output/dvc/line.png">
+
+<pre><code># Area chart
+ggplot(data = data.frame(time = time(passengers), passengers = passengers), aes(x = time, y = passengers)) + 
+geom_area() +
+labs(title = "Airline Passengers (1949-1960)", x = "Year", y = "Passengers")</code></pre>
+
+<p>Area Graph</p>
+<img src="output/dvc/area.png">
+
+<pre><code># Scatter plot
+ggplot(data = data.frame(time = time(passengers), passengers = passengers), aes(x = time, y = passengers)) + 
+geom_point() +
+labs(title = "Airline Passengers (1949-1960)", x = "Year", y = "Passengers")</code></pre>
+
+<p>Scatter Plot</p>
+<img src="output/dvc/scatter.png">
+
+<pre><code># Box plot
+ggplot(data = data.frame(passengers = passengers), aes(y = passengers)) + 
+geom_boxplot() +
+labs(title = "Airline Passengers (1949-1960)", x = "", y = "Passengers")</code></pre>
+
+<p>Boxplot</p>
+<img src="output/dvc/box.png">
+
+<pre><code># Density plot
+ggplot(data = data.frame(passengers = passengers), aes(x = passengers)) + 
+geom_density() +
+labs(title = "Airline Passengers (1949-1960)", x = "Passengers", y = "Density")</code></pre>
+
+<p>Density Graph</p>
+<img src="output/dvc/density.png">
+
+<pre><code># Decomposition plot
+library(ggfortify)
+autoplot(decompose(passengers)) +
+labs(title = "Airline Passengers (1949-1960)", x = "Year", y = "Passengers")
+</code></pre>
+
+<p>Decomposition of time series data</p>
+<img src="output/dvc/decomposition.png">
+
+
+<pre><code># Heatmap
+library(ggplot2)
+library(reshape2)
+passengers_df <- as.data.frame(as.matrix(passengers))
+colnames(passengers_df) <- "Passengers"
+passengers_df$Month <- month.abb[1:12]
+passengers_melt <- melt(passengers_df, id.vars = "Month")
+ggplot(passengers_melt, aes(x = Month, y = variable, fill = value)) + 
+geom_tile() +
+scale_fill_gradient(low = "white", high = "blue") +
+labs(title = "Airline Passengers (1949-1960)", x = "", y = "Year")</code></pre>
+
+
+<h2>Output Screenshot</h2>
+<p>Heat Map</p>
+<img src="output/dvc/heatmap.png">
